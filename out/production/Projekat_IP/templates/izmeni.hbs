@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-info">
+    <a class="navbar-brand h5 mr-3" href="/">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link h5" href="/">Početna <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link h5" href="/dodajAutomobil">Dodaj automobil</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+{{#if automobil}}
+    <div class="container">
+        <h2 class="text-center mb-3 mt-3"><b>Izmeni automobil</b></h2>
+        <form class="mt-5">
+            <div class="form-group">
+                <label for="inputMarka">Marka</label>
+                <input type="text" class="form-control" id="inputMarka" value="{{automobil.marka}}" placeholder="Marka"
+                       required>
+            </div>
+            <div class="form-group">
+                <label for="inputModel">Model</label>
+                <input type="text" class="form-control" id="inputModel" value="{{automobil.model}}" placeholder="Model"
+                       required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="inputGodiste">Godiste</label>
+                    <input type="number" class="form-control" id="inputGodiste" value="{{automobil.godiste}}"
+                           placeholder="Godiste" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="inputKubikaza">Kubikaza</label>
+                    <input type="number" class="form-control" id="inputKubikaza" value="{{automobil.kubikaza}}"
+                           placeholder="Kubikaza" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="inputKaroserija">Karoserija</label>
+                    <select class="form-control" id="selectKaroserija">
+                        <option value="{{automobil.karoserija}}">{{automobil.karoserija}}</option>
+                        <option>Limuzina</option>
+                        <option>Karavan</option>
+                        <option>Hecbek</option>
+                        <option value="">Dzip</option>
+                        <option value="">Pickup</option>
+                    </select>
+                </div>
+                {{#each automobil.gorivo}}
+                    <div class="form-group col-md-6">
+                        <label for="inputGorivo">Gorivo</label>
+                        <select class="form-control" id="selectGorivo">
+                            <option value="{{this}}">{{this}}</option>
+                            <option value="Benzin">Benzin</option>
+                            <option value="Dizel">Dizel</option>
+                            <option value="Gas(TNG)">Gas(TNG)</option>
+                            <option value="Metan CNG">Metan CNG</option>
+                            <option value="Elektricni pogon">Elektricni pogon</option>
+                            <option value="Hibridni pogon">Hibridni pogon</option>
+                            <option value="kombinacija">Benzin+Gas(TNG)</option>
+                        </select>
+                    </div>
+                {{/each}}
+
+            </div>
+
+        </form>
+        <button id="btnIzmeni" onclick="naKlik({{automobil.id}})" class="btn btn-primary">Izmeni automobil</button>
+
+        <div id="poruka" class="mt-5 text-center"></div>
+    </div>
+
+{{/if}}
+
+<script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+<script>
+    let sel1 = document.querySelector("#selectGorivo");
+    let sel2 = document.querySelector("#selectKaroserija");
+
+    let auto = {
+        "marka": $("#inputMarka").val(),
+        "model": $("#inputModel").val(),
+        "godiste": $("#inputGodiste").val(),
+        "kubikaza": $("#inputKubikaza").val(),
+        "gorivo": sel1[0].value,
+        "karoserija": sel2[0].value
+    };
+
+    function naKlik(el) {
+        let selecti = document.querySelectorAll(".form-control");
+        let inputi = document.getElementsByTagName("input");
+
+        for (let s of selecti)
+            if (s.value == "0") {
+                $("#poruka").html("<h1 class='text-danger mt-5'>Niste uneli sve podatke</h1>");
+                return;
+            }
+
+        for (let i of inputi) {
+            if (i.value == ""){
+                $("#poruka").html("<h1 class='text-danger mt-5'>Niste uneli sve podatke</h1>");
+                return;
+            }
+
+        }
+
+        for (let i = 1; i < sel1.length; i++) {
+            if (sel1[0].value.replace(" ", "").toLocaleLowerCase() == "benzin+gas(tng)") {
+                if (sel1[i].value.replace(" ", "") == "kombinacija") {
+                    sel1[i].outerHTML = "";
+                    return;
+                }
+            }
+            if (sel1[0].value == sel1[i].value)
+                sel1[i].outerHTML = "";
+        }
+
+        for (let i = 1; i < sel2.length; i++) {
+            if (sel2[0].value == sel2[i].value)
+                sel2[i].outerHTML = "";
+        }
+
+
+        if (auto.marka == $("#inputMarka").val() && auto.model == $("#inputModel").val() && auto.godiste == $("#inputGodiste").val() && auto.kubikaza == $("#inputKubikaza").val() && auto.gorivo == $("#selectGorivo").children("option:selected").val() && auto.karoserija == $("#selectKaroserija").children("option:selected").val()) {
+            $("#poruka").html("<h1 class='text-danger mt-5'>Niste uneli nikakve izmene</h1>");
+            return;
+        }
+
+        $.post("/api/izmeniAutomobil", {
+            id: el,
+            marka: $("#inputMarka").val(),
+            model: $("#inputModel").val(),
+            godiste: $("#inputGodiste").val(),
+            kubikaza: $("#inputKubikaza").val(),
+            karoserija: $("#selectKaroserija").children("option:selected").val(),
+            gorivo: $("#selectGorivo").children("option:selected").html()
+
+        }, function (response) {
+            $("#poruka").html(`<h1 class='text-green'>${response}</h1>`);
+            auto.marka= $("#inputMarka").val();
+            auto.model= $("#inputModel").val();
+            auto.godiste= $("#inputGodiste").val();
+            auto.kubikaza= $("#inputKubikaza").val();
+            auto.karoserija= $("#selectKaroserija").children("option:selected").val();
+            auto.gorivo= $("#selectGorivo").children("option:selected").html();
+        })
+
+
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+</body>
+</html>

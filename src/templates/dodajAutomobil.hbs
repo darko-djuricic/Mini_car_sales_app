@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-info">
+    <a class="navbar-brand h5 mr-3" href="/">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link h5" href="/">Početna <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link h5" href="/dodajAutomobil">Dodaj automobil</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <h2 class="text-center mb-3 mt-3"><b>Dodaj automobil</b></h2>
+    <form class="mt-5">
+        <div class="form-group">
+            <label for="inputMarka">Marka</label>
+            <input type="text" class="form-control" id="inputMarka" placeholder="Marka" required>
+        </div>
+        <div class="form-group">
+            <label for="inputModel">Model</label>
+            <input type="text" class="form-control" id="inputModel" placeholder="Model" required>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="inputGodiste">Godiste</label>
+                <input type="number" class="form-control" id="inputGodiste" placeholder="Godiste" required>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputKubikaza">Kubikaza</label>
+                <input type="number" class="form-control" id="inputKubikaza" placeholder="Kubikaza" required>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="inputKaroserija">Karoserija</label>
+                <select class="form-control" id="selectKaroserija">
+                    <option value="0">-- Izaberi --</option>
+                    <option>Limuzina</option>
+                    <option>Karavan</option>
+                    <option>Hecbek</option>
+                    <option value="">Dzip</option>
+                    <option value="">Pickup</option>
+                </select>
+            </div>
+            <div class="form-group col-md-6">
+                <label for="inputGorivo">Gorivo</label>
+                <select class="form-control" id="selectGorivo">
+                    <option value="0">-- Izaberi --</option>
+                    <option>Benzin</option>
+                    <option>Dizel</option>
+                    <option>Gas(TNG)</option>
+                    <option value="">Metan CNG</option>
+                    <option value="">Elektricni pogon</option>
+                    <option value="">Hibridni pogon</option>
+                </select>
+                <div id="chkGas">
+                    <input type="checkbox" id="chkZaGas" class="mt-3"><i id="chkText"></i>
+                </div>
+            </div>
+        </div>
+
+    </form>
+    <button id="btnDodaj" class="btn btn-primary">Dodaj automobil</button>
+
+    <div id="poruka" class="text-center"></div>
+</div>
+
+
+<script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#chkGas").hide();
+        $("#btnDodaj").click(function () {
+            let selecti = document.querySelectorAll(".form-control");
+            let inputi = document.getElementsByTagName("input");
+
+            for (let s of selecti)
+                if (s.value == "0") {
+                    $("#poruka").html("<h1 class='text-danger mt-5'>Niste uneli sve podatke</h1>");
+                    return;
+                }
+
+            for (let i of inputi) {
+                if (i.value == ""){
+                    $("#poruka").html("<h1 class='text-danger mt-5'>Niste uneli sve podatke</h1>");
+                    return;
+                }
+
+            }
+
+            let check=document.querySelector("#chkZaGas");
+
+            $.post("/api/dodajAutomobile", {
+                marka: $("#inputMarka").val(),
+                model: $("#inputModel").val(),
+                godiste: $("#inputGodiste").val(),
+                kubikaza: $("#inputKubikaza").val(),
+                karoserija: $("#selectKaroserija").val(),
+                gorivo: $("#selectGorivo").val()+(check.checked?"%"+$("#chkText").html().replace("+",""):"")
+            }, function (response) {
+                $("#poruka").html(`<h1 class="mt-5">${response}</h1>`)
+            })
+
+        })
+
+        $("#selectGorivo").change(function () {
+            if($("#selectGorivo").val()=="Benzin" || $("#selectGorivo").val()=="Gas(TNG)"){
+                $("#chkGas").show();
+                $("#chkText").html(`${$("#selectGorivo").val()=="Gas(TNG)"?"+Benzin":"+Gas(TNG)"}`);
+            }
+        })
+    })
+
+</script>
+</body>
+</html>
